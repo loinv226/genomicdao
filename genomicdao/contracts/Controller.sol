@@ -1,18 +1,20 @@
-pragma solidity ^0.8.9;
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.20;
 
-import "@openzeppelin/contracts/utils/Counters.sol";
-import "./NFT.sol";
-import "./Token.sol";
+// Counters.sol removed from openzeppelin
+// import "@openzeppelin/contracts/utils/Counters.sol";
+import "@openzeppelin/contracts/access/Ownable.sol";
 
-contract Controller {
-    using Counters for Counters.Counter;
+import "./interfaces/IGeneNFT.sol";
+import "./interfaces/IPCSPToken.sol";
 
+contract Controller is Ownable {
     //
     // STATE VARIABLES
     //
-    Counters.Counter private _sessionIdCounter;
-    GeneNFT public geneNFT;
-    PostCovidStrokePrevention public pcspToken;
+    uint256 private _sessionIdCounter;
+    IGeneNFT public geneNFT;
+    IPCSPToken public pcspToken;
 
     struct UploadSession {
         uint256 id;
@@ -26,50 +28,105 @@ contract Controller {
         string hashContent;
     }
 
+    // To check session exist
     mapping(uint256 => UploadSession) sessions;
+    // Doc submited
     mapping(string => DataDoc) docs;
+    // Check doc submited
     mapping(string => bool) docSubmits;
     mapping(uint256 => string) nftDocs;
 
     //
     // EVENTS
     //
-    event UploadData(string docId, uint256 sessionId);
+    event UploadData(address user, string docId, uint256 sessionId);
+    event UploadSuccess(
+        address user,
+        string docId,
+        uint256 sessionId,
+        uint256 nftId,
+        uint256 tokenAmount,
+        string proof
+    );
 
-    constructor(address nftAddress, address pcspAddress) {
-        geneNFT = GeneNFT(nftAddress);
-        pcspToken = PostCovidStrokePrevention(pcspAddress);
+    // Modifiers
+    modifier notExistDocSubmited(string memory docId) {
+        require(!docSubmits[docId], "Controller: doc submited");
+        _;
     }
 
-    function uploadData(string memory docId) public returns (uint256) {
+    modifier mustContainSession(uint256 sessionId, address user) {
+        require(
+            sessions[sessionId].id > 0 && sessions[sessionId].user == user,
+            "Controller: session not valid"
+        );
+        _;
+    }
+
+    constructor(address nftAddress, address pcspAddress) Ownable(_msgSender()) {
+        geneNFT = IGeneNFT(nftAddress);
+        pcspToken = IPCSPToken(pcspAddress);
+    }
+
+    function uploadData(
+        address user,
+        string memory docId,
+        string memory proof,
+        bool confirmed
+    ) external onlyOwner notExistDocSubmited(docId) returns (uint256) {
         // TODO: Implement this method: to start an uploading gene data session. The doc id is used to identify a unique gene profile. Also should check if the doc id has been submited to the system before. This method return the session id
+
+        // Get new session id
+        _sessionIdCounter++;
+        uint256 sessionId = _sessionIdCounter;
+
+        // Save and return session
+        sessions[sessionId] = UploadSession(sessionId, user, proof, confirmed);
+
+        // Emit event
+        emit UploadData(user, docId, sessionId);
+
+        return sessionId;
     }
 
     function confirm(
+        address user,
         string memory docId,
-        string memory contentHash,
+        string memory hashContent,
         string memory proof,
         uint256 sessionId,
         uint256 riskScore
-    ) public {
+    )
+        external
+        onlyOwner
+        notExistDocSubmited(docId)
+        mustContainSession(sessionId, user)
+    {
         // TODO: Implement this method: The proof here is used to verify that the result is returned from a valid computation on the gene data. For simplicity, we will skip the proof verification in this implementation. The gene data's owner will receive a NFT as a ownership certicate for his/her gene profile.
-
         // TODO: Verify proof, we can skip this step
+        // Update doc content
+        docs[docId] = DataDoc(docId, hashContent);
+        docSubmits[docId] = true;
+        // Mint NFT
+        uint256 nftId = geneNFT.safeMint(user);
 
-        // TODO: Update doc content
+        // Reward PCSP token based on risk stroke
+        uint256 tokenAmount = pcspToken.reward(user, riskScore, docId);
 
-        // TODO: Mint NFT 
+        // Emit event
+        emit UploadSuccess(user, docId, sessionId, nftId, tokenAmount, proof);
 
-        // TODO: Reward PCSP token based on risk stroke
-
-        // TODO: Close session
+        // Close session
+        delete sessions[sessionId];
     }
 
-    function getSession(uint256 sessionId) public view returns(UploadSession memory) {
+    function getSession(
+        uint256 sessionId
+    ) public view returns (UploadSession memory) {
         return sessions[sessionId];
     }
 
-    function getDoc(string memory docId) public view returns(DataDoc memory) {
+    function getDoc(string memory docId) public view returns (DataDoc memory) {
         return docs[docId];
     }
 }
