@@ -17,11 +17,11 @@ async function main() {
     geneNFTInfo.address,
     pcspTokenInfo.address
   );
-  // await task.transferOwnership(
-  //   ctlContractInfo.address,
-  //   geneNFTInfo.address,
-  //   pcspTokenInfo.address
-  // );
+  await task.transferOwnership(
+    ctlContractInfo.address,
+    geneNFTInfo.address,
+    pcspTokenInfo.address
+  );
 
   envInfo.ctlContractInfo = ctlContractInfo;
   envInfo.geneNFTInfo = geneNFTInfo;
