@@ -1,3 +1,4 @@
+import os
 from src.type import GeneProfile
 from src.adapter.evm_adapter import EVMAdapter
 from src.adapter.storage import LocalStorage
@@ -8,7 +9,8 @@ from src import env
 class Gateway:
     
     def __init__(self):
-        self.bsc_adapter = EVMAdapter(rpc_url=env.EVM_RPC_URL)
+        self.bsc_adapter = EVMAdapter()
+        
         self.local_storage = LocalStorage()
         cipher = Cipher()
         self.tee_service = TEEService(self.local_storage, cipher)
@@ -33,11 +35,21 @@ class Gateway:
             raise Exception("Signature invalid")
         
         doc_id = gene_profile.id
+        proof = "success"
         # Get session id to call submit gene data
-        session_id = self.bsc_adapter.get_session_with_doc_id(doc_id)
+        session_id = self.bsc_adapter.get_session_with_doc_id(address, doc_id, proof, True)
+        print(f"-> session_id: {session_id}")
         # Submit
-        self.bsc_adapter.submit_gene_data(session_id, doc_id, gene_profile.hashed_content, gene_profile.risk_score)
+        if session_id is None:
+            return gene_profile
+        
+        info: dict = self.bsc_adapter.submit_gene_data(address, session_id, doc_id, gene_profile.hashed_content, proof, gene_profile.risk_score)
         # Get total token mined and NFT info
+        gene_profile.pcsp_token_amount = info.get("tokenAmount")
+        gene_profile.gnft_id = info.get("nftId")
+        gene_profile.submited_to_blockchain = True
+        self.local_storage.save_gene_profile(account_id, gene_profile)
+
         return gene_profile
     
     

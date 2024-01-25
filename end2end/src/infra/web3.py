@@ -16,7 +16,7 @@ class BaseWeb3(ABC):
         """Verify message signed"""
 
     @abstractmethod
-    def get_session_with_doc_id(self, doc_id):
+    def get_session_with_doc_id(self, user_address, doc_id, proof, confirmed):
         """Submit gene id to blockchain and get session id to submit gene data
 
         Parameters
@@ -27,7 +27,7 @@ class BaseWeb3(ABC):
         pass
 
     @abstractmethod
-    def submit_gene_data(self, session_id, doc_id, content_hash, proof, risk_score):
+    def submit_gene_data(self, user_address, session_id, doc_id, content_hash, proof, risk_score) -> dict:
         """Submit gene data to blockchain with session id
 
         Parameters

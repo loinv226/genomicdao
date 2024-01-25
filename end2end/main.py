@@ -31,7 +31,7 @@ def main():
     profile = session.gene_profile
     print(f"-> Done\n")
 
-    bsc_adapter = EVMAdapter(rpc_url=env.EVM_RPC_URL)
+    bsc_adapter = EVMAdapter()
     geneCtl = GeneController(request, bsc_adapter)
 
     if not session.is_gene_profile_exist():
@@ -55,8 +55,8 @@ def main():
     print(f"-> Account: {session.account}")
     print(f"-> Hadhed content: {profile.hashed_content}")
     print(f"-> Gene info: {profile.gene_content}")
-    print(f"-> PCSP token: {profile.pcsp_token_amount}")
-    print(f"-> GNFT Address: {profile.gnft_address}")
+    print(f"-> PCSP token: {profile.pcsp_token_amount/10**18}")
+    print(f"-> GNFT ID: {profile.gnft_id}")
 
 if __name__ == "__main__":
     main()
