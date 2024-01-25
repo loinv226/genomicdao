@@ -6,7 +6,7 @@ class GeneProfile:
     risk_score: int = None
     address: str = None
     pcsp_token_amount = 0
-    gnft_address: str = None
+    gnft_id: str = None
     submited_to_blockchain = False
     decrypted_content = False
 

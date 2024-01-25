@@ -27,13 +27,13 @@ class TEEService:
         """Compute PCSP score"""
         match(gene_data.lower()):
             case "low risk":
-                return 0
+                return 4
             case "slightly high risk":
-                return 1
+                return 3
             case "high risk":
                 return 2
             case "extremely high risk":
-                return 3
+                return 1
         raise Exception("Gene data not valid")
 
     def load_gene_profile(self, account_id: str):
