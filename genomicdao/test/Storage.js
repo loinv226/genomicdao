@@ -36,7 +36,7 @@ describe("Controller", function () {
 
       const proof = "success";
       const docId = "doc1";
-      await expect(controller.uploadData(addr2, docId, proof, true)).to.emit(
+      await expect(controller.uploadDoc(addr2, docId, proof, true)).to.emit(
         controller,
         "UploadData"
       );
@@ -54,7 +54,7 @@ describe("Controller", function () {
       const riskScore = 1;
       const sessionId = 1;
 
-      await controller.uploadData(addr1, docId, proof, true);
+      await controller.uploadDoc(addr1, docId, proof, true);
       await controller.confirm(
         addr1,
         docId,
@@ -65,7 +65,7 @@ describe("Controller", function () {
       );
 
       await expect(
-        controller.uploadData(addr1, docId, proof, true)
+        controller.uploadDoc(addr1, docId, proof, true)
       ).to.be.revertedWith("Controller: doc submited");
     });
   });
@@ -82,7 +82,7 @@ describe("Controller", function () {
       const riskScore = 1;
       const sessionId = 1;
 
-      await controller.uploadData(addr1, docId, proof, true);
+      await controller.uploadDoc(addr1, docId, proof, true);
       await controller.confirm(
         addr1,
         docId,
@@ -108,7 +108,7 @@ describe("Controller", function () {
 
       const awardAmount = BigInt("15000") * BigInt("10") ** BigInt("18");
 
-      await controller.uploadData(addr1, docId, proof, true);
+      await controller.uploadDoc(addr1, docId, proof, true);
       await controller.confirm(
         addr1,
         docId,
@@ -132,7 +132,7 @@ describe("Controller", function () {
       const riskScore = 1;
       const sessionId = 1;
 
-      await controller.uploadData(addr1, docId, proof, true);
+      await controller.uploadDoc(addr1, docId, proof, true);
       await controller.confirm(
         addr1,
         docId,
@@ -157,7 +157,7 @@ describe("Controller", function () {
       const riskScore = 1;
       const sessionId = 1;
 
-      await controller.uploadData(addr1, docId, proof, true);
+      await controller.uploadDoc(addr1, docId, proof, true);
       await controller.confirm(
         addr1,
         docId,
@@ -181,7 +181,7 @@ describe("Controller", function () {
       const riskScore = 1;
       const sessionId = 1;
 
-      await controller.uploadData(addr1, docId, proof, true);
+      await controller.uploadDoc(addr1, docId, proof, true);
       await controller.confirm(
         addr1,
         docId,
@@ -214,7 +214,7 @@ describe("Controller", function () {
       const riskScore = 1;
       const sessionId = 1;
 
-      await controller.uploadData(addr1, docId, proof, true);
+      await controller.uploadDoc(addr1, docId, proof, true);
 
       await expect(
         controller.confirm(
@@ -238,7 +238,7 @@ describe("Controller", function () {
       const riskScore = 1;
       const sessionId = 1;
 
-      await controller.uploadData(addr1, docId, proof, true);
+      await controller.uploadDoc(addr1, docId, proof, true);
       await controller.confirm(
         addr1,
         docId,

@@ -68,12 +68,12 @@ contract Controller is Ownable {
         pcspToken = IPCSPToken(pcspAddress);
     }
 
-    function uploadData(
+    function uploadDoc(
         address user,
         string memory docId,
         string memory proof,
         bool confirmed
-    ) external onlyOwner notExistDocSubmited(docId) returns (uint256) {
+    ) external onlyOwner notExistDocSubmited(docId) {
         // TODO: Implement this method: to start an uploading gene data session. The doc id is used to identify a unique gene profile. Also should check if the doc id has been submited to the system before. This method return the session id
 
         // Get new session id
@@ -85,8 +85,6 @@ contract Controller is Ownable {
 
         // Emit event
         emit UploadData(user, docId, sessionId);
-
-        return sessionId;
     }
 
     function confirm(
