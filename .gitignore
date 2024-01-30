@@ -2,3 +2,4 @@ end2end/.env
 end2end/client_session.json
 end2end/local_storage.json
 __pycache__
+.DS_Store
