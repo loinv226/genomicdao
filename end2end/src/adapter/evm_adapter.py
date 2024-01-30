@@ -63,7 +63,11 @@ class EVMAdapter(BaseWeb3):
             tx_receipt = self.web3.eth.wait_for_transaction_receipt(tx_hash)
             processed_logs = contract.events.UploadSuccess().process_receipt(tx_receipt)
             # print(f"result.items: {processed_logs[0]['args']}")
+            if len(processed_logs) == 0:
+                return None
+            
             return processed_logs[0]['args']
+        
         except Exception as e:
             print(f"-> {e}")
     
@@ -83,7 +87,7 @@ class EVMAdapter(BaseWeb3):
             # call to get session
             tx_receipt = self.web3.eth.wait_for_transaction_receipt(tx_hash)
             processed_logs = contract.events.UploadData().process_receipt(tx_receipt)
-            print(f"processed_logs: {processed_logs}")
+            # print(f"processed_logs: {processed_logs}")
             if len(processed_logs) == 0:
                 return None
             
