@@ -14,20 +14,20 @@ def main():
     load_dotenv(".env")
 
     request = Request()
-    sessionCtl = SessionController(request)
+    session_ctl = SessionController(request)
 
     print("Hello, this is a simulation of the process of analyzing your gene data that has been saved in the file sample.json")
     print("=====Checking session=====")
     sleep(1)
-    sessionCtl.load_session()
-    print(f"-> Hello, {sessionCtl.session().account}")
+    session_ctl.load_session()
+    print(f"-> Hello, {session_ctl.session().account}")
     print(f"-> Done\n")
 
     print("=====Check profile=====")
     print("-> Checking...")
     sleep(1)
-    sessionCtl.fetch_profile_if_need()
-    session = sessionCtl.session()
+    session_ctl.fetch_profile_if_need()
+    session = session_ctl.session()
     profile = session.gene_profile
     print(f"-> Done\n")
 
